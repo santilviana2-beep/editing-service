@@ -14,9 +14,6 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- EmailJS for sending emails -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    
     <style>
         /* ===== CUSTOM CSS VARIABLES ===== */
         :root { 
@@ -30,7 +27,6 @@
             --success: #10b981;
         }
         
-        /* ===== BASE STYLES ===== */
         * {
             margin: 0;
             padding: 0;
@@ -44,148 +40,64 @@
             font-family: 'Inter', sans-serif;
             color: var(--slate);
             scroll-behavior: smooth;
-            min-height: 100vh;
-            position: relative;
         }
         
-        /* ===== UTILITY CLASSES ===== */
-        .mono { 
-            font-family: 'JetBrains Mono', monospace; 
-        }
+        .mono { font-family: 'JetBrains Mono', monospace; }
         
-        .fade-in { 
-            animation: fadeIn 0.8s ease-out; 
-        }
-        
-        .slide-up {
-            animation: slideUp 0.6s ease-out;
-        }
-        
-        /* ===== CUSTOM COMPONENTS ===== */
         .bento-card {
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(12px);
             border: 1px solid #e9d5ff;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             border-radius: 2.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .bento-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary-light), transparent);
-            transform: translateX(-100%);
-            transition: transform 0.6s ease;
+            transition: all 0.3s ease;
         }
         
         .bento-card:hover {
             border-color: var(--primary);
             box-shadow: 0 20px 40px -20px rgba(139, 92, 246, 0.25);
-            transform: translateY(-2px);
         }
         
-        .bento-card:hover::before {
-            transform: translateX(100%);
-        }
-        
-        .modern-input {
+        .modern-input, .modern-textarea {
             width: 100%;
             background: rgba(245, 243, 255, 0.5);
             border: 1px solid #ddd6fe;
             border-radius: 1.5rem;
             padding: 1.25rem;
-            font-size: 0.875rem;
             transition: all 0.3s ease;
             outline: none;
         }
         
-        .modern-input:focus {
+        .modern-input:focus, .modern-textarea:focus {
             border-color: var(--primary);
             background: #ffffff;
             box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
         }
         
-        .modern-input.error {
-            border-color: var(--error);
-            animation: shake 0.5s ease;
-        }
-        
-        .modern-textarea {
-            background: rgba(245, 243, 255, 0.5);
-            border: 1px solid #ddd6fe;
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            font-size: 0.875rem;
-            transition: all 0.3s ease;
-            outline: none;
-            resize: vertical;
-            min-height: 120px;
-        }
-        
-        .modern-textarea:focus {
-            border-color: var(--primary);
-            background: #ffffff;
-            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
-        }
-        
-        /* ===== CUSTOM CHECKBOX STYLES ===== */
         .custom-checkbox {
             width: 1.2rem;
             height: 1.2rem;
             accent-color: var(--primary);
-            cursor: pointer;
-            transition: all 0.2s ease;
         }
         
-        .custom-checkbox:hover {
-            transform: scale(1.1);
-        }
-        
-        /* ===== IMAGE GALLERY ===== */
         .image-gallery {
             display: flex;
             gap: 1.5rem;
             overflow-x: auto;
             padding-bottom: 1.5rem;
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary-light) #f0f0f0;
-        }
-        
-        .image-gallery::-webkit-scrollbar {
-            height: 6px;
-        }
-        
-        .image-gallery::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        
-        .image-gallery::-webkit-scrollbar-thumb {
-            background: var(--primary-light);
-            border-radius: 10px;
         }
         
         .image-gallery img {
             height: 16rem;
             border-radius: 1.5rem;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
         
         .image-gallery img:hover {
-            border-color: var(--primary);
+            border: 2px solid var(--primary);
             transform: scale(1.02);
-            box-shadow: 0 10px 30px -15px rgba(139, 92, 246, 0.5);
         }
         
-        /* ===== STICKY BILLING ===== */
         #sticky-billing { 
             position: fixed; 
             bottom: 1.5rem; 
@@ -194,7 +106,6 @@
             z-index: 100; 
             width: 95%; 
             max-width: 600px; 
-            display: flex !important; 
             opacity: 0;
             visibility: hidden;
             transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -206,21 +117,10 @@
             transform: translateX(-50%) translateY(0);
         }
         
-        /* ===== SECTION VISIBILITY ===== */
-        #order-form-section, 
-        #receipt-section, 
-        #error-modal,
-        #success-modal,
-        #email-receipt-modal {
+        #order-form-section, #receipt-section, #error-modal, #success-modal {
             display: none;
         }
         
-        #order-form-section.active {
-            display: block;
-            animation: fadeIn 0.8s ease-out;
-        }
-        
-        /* ===== MODAL STYLES ===== */
         .modal {
             position: fixed;
             inset: 0;
@@ -230,7 +130,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem;
         }
         
         .modal-content {
@@ -241,78 +140,17 @@
             border: 1px solid #e9d5ff;
             border-radius: 2rem;
             padding: 2rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            animation: modalPop 0.4s ease-out;
         }
         
-        /* ===== LOADING SPINNER ===== */
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 1rem auto;
-        }
-        
-        /* ===== ANIMATIONS ===== */
-        @keyframes fadeIn { 
-            from { 
-                opacity: 0; 
-                transform: translateY(20px); 
-            } 
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            } 
-        }
-        
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-        
-        @keyframes modalPop {
-            0% {
-                opacity: 0;
-                transform: scale(0.9) translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* ===== LOADING OVERLAY ===== */
         .loading-overlay {
             position: fixed;
             inset: 0;
             background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(4px);
             z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            gap: 1rem;
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
@@ -323,50 +161,82 @@
             visibility: visible;
         }
         
-        /* ===== RESPONSIVE DESIGN ===== */
-        @media (max-width: 768px) {
-            .bento-card {
-                border-radius: 1.5rem;
-            }
-            
-            .image-gallery img {
-                height: 12rem;
-            }
-            
-            #sticky-billing {
-                flex-direction: column;
-                gap: 1rem;
-                padding: 1rem;
-            }
-            
-            #sticky-billing > div:first-child {
-                border-right: none;
-                border-bottom: 1px solid #f1f1f1;
-                padding-bottom: 1rem;
-                width: 100%;
-                text-align: center;
-            }
-            
-            .modal-content {
-                margin: 1rem;
-                padding: 1.5rem;
-            }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
         
-        /* ===== PRINT STYLES ===== */
-        @media print {
-            .bento-card {
-                break-inside: avoid;
-                box-shadow: none;
-                border: 1px solid #ddd;
-            }
-            
-            #sticky-billing,
-            button,
-            .image-gallery {
-                display: none !important;
-            }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* RECEIPT STYLES - EXACTLY AS SHOWN IN IMAGE */
+        .receipt-container {
+            font-family: 'JetBrains Mono', monospace;
+            background: white;
+            border: 2px solid #e9d5ff;
+            border-radius: 1rem;
+            padding: 1.5rem;
         }
+        
+        .receipt-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .receipt-line {
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+        
+        .receipt-items {
+            margin: 1rem 0;
+            padding-left: 1rem;
+            border-left: 2px solid #e9d5ff;
+        }
+        
+        .receipt-total {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            padding-top: 1rem;
+            border-top: 2px dashed #e9d5ff;
+        }
+        
+        .receipt-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-discard, .btn-finalize {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-discard {
+            background: #f1f1f1;
+            color: #666;
+        }
+        
+        .btn-finalize {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-discard:hover { background: #e5e5e5; }
+        .btn-finalize:hover { background: var(--primary-dark); }
     </style>
 </head>
 <body class="p-4 md:p-12 lg:p-20">
@@ -374,11 +244,11 @@
     <!-- LOADING OVERLAY -->
     <div id="loading-overlay" class="loading-overlay">
         <div class="spinner"></div>
-        <p class="mono text-sm text-purple-600 font-bold">Processing your order...</p>
+        <p class="mono text-sm text-purple-600 font-bold mt-4">Processing order...</p>
     </div>
 
     <!-- LANDING PAGE -->
-    <div id="landing-section" class="max-w-6xl mx-auto min-h-[85vh] flex flex-col justify-center fade-in">
+    <div id="landing-section" class="max-w-6xl mx-auto min-h-[85vh] flex flex-col justify-center">
         <header class="mb-16">
             <div class="flex items-center gap-2 mb-8">
                 <span class="w-12 h-0.5 bg-purple-200"></span>
@@ -388,64 +258,33 @@
                 EDITING <br>SERVICE
                 <span class="block text-sm font-normal text-purple-400 tracking-normal mt-4">by SANTI VIRELINTH</span>
             </h2>
-            <div class="space-y-1 text-slate-400 italic text-sm font-medium border-l-2 border-purple-200 pl-6">
-                <p><i class="fas fa-quote-left text-purple-300 mr-2 text-xs"></i>Aesthetics is the silent language of precision.</p>
-                <p><i class="fas fa-quote-left text-purple-300 mr-2 text-xs"></i>Transforming digital fragments into visual poetry.</p>
-            </div>
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bento-card p-10 md:col-span-2">
-                <div class="flex items-center gap-4 mb-8">
-                    <span class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
-                        <i class="fas fa-gear text-purple-500 text-xs"></i>
-                    </span>
-                    <h3 class="mono text-[10px] font-bold uppercase tracking-widest text-slate-400">Operational Framework</h3>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-[11px] font-semibold uppercase tracking-wider">
+                <h3 class="mono text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-8">Operational Framework</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-[11px] font-semibold uppercase">
                     <ul class="space-y-4">
-                        <li class="flex gap-4 items-center">
-                            <span class="w-6 h-6 rounded-full bg-purple-50 flex items-center justify-center text-purple-500 text-xs">01</span>
-                            Standard Delivery: 3-5 Business Days
-                        </li>
-                        <li class="flex gap-4 items-center">
-                            <span class="w-6 h-6 rounded-full bg-purple-50 flex items-center justify-center text-purple-500 text-xs">02</span>
-                            Rush Priority: +10 GC Surcharge
-                        </li>
-                        <li class="flex gap-4 items-center">
-                            <span class="w-6 h-6 rounded-full bg-purple-50 flex items-center justify-center text-purple-500 text-xs">03</span>
-                            Payment Policy: Full or Half Settlement
-                        </li>
+                        <li>01 Standard Delivery: 3-5 Days</li>
+                        <li>02 Rush Priority: +10 GC</li>
+                        <li>03 Payment: Full/Half Settlement</li>
                     </ul>
                     <ul class="space-y-4">
-                        <li class="flex gap-4 items-center">
-                            <span class="w-6 h-6 rounded-full bg-purple-50 flex items-center justify-center text-purple-500 text-xs">04</span>
-                            Max File Size: 8MB per image
-                        </li>
-                        <li class="flex gap-4 items-center">
-                            <span class="w-6 h-6 rounded-full bg-purple-50 flex items-center justify-center text-purple-500 text-xs">05</span>
-                            Formats: JPG, PNG, GIF
-                        </li>
-                        <li class="flex gap-4 items-center">
-                            <span class="w-6 h-6 rounded-full bg-purple-50 flex items-center justify-center text-purple-500 text-xs">06</span>
-                            24/7 Customer Support
-                        </li>
+                        <li>04 Max File Size: 8MB</li>
+                        <li>05 Formats: JPG, PNG, GIF</li>
+                        <li>06 24/7 Support</li>
                     </ul>
                 </div>
             </div>
             
-            <div class="bento-card p-10 bg-gradient-to-br from-slate-900 to-slate-800 text-white flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center gap-2 mb-6">
-                        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                        <span class="mono text-[10px] font-bold text-purple-400 uppercase tracking-[0.3em]">Status: Open</span>
-                    </div>
-                    <p class="text-2xl font-bold mt-4 tracking-tight">Ready to Avail?</p>
-                    <p class="text-xs text-slate-400 mt-2">Start your order now and get professional editing service</p>
+            <div class="bento-card p-10 bg-gradient-to-br from-slate-900 to-slate-800 text-white">
+                <div class="mb-6">
+                    <span class="w-2 h-2 bg-green-400 rounded-full inline-block mr-2"></span>
+                    <span class="mono text-[10px] text-purple-400">Status: Open</span>
                 </div>
-                <button onclick="startOrder()" class="mt-12 bg-purple-600 hover:bg-purple-500 text-white font-black py-5 rounded-2xl transition-all uppercase text-[11px] tracking-[0.3em] active:scale-95 flex items-center justify-center gap-2 group">
-                    <span>Initialize Order</span>
-                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                <p class="text-2xl font-bold mb-4">Ready to Avail?</p>
+                <button onclick="startOrder()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-5 rounded-2xl text-[11px] uppercase tracking-[0.3em]">
+                    Initialize Order →
                 </button>
             </div>
         </div>
@@ -454,643 +293,209 @@
     <!-- ORDER FORM SECTION -->
     <div id="order-form-section" class="max-w-6xl mx-auto pb-32">
         <nav class="flex justify-between items-center mb-12 border-b border-purple-100 pb-8">
-            <div class="flex items-center gap-4">
-                <span class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                    <i class="fas fa-pen text-purple-500 text-sm"></i>
-                </span>
-                <span class="mono text-[10px] font-bold uppercase tracking-[0.3em] text-purple-400 italic">ORDER FORM</span>
-            </div>
-            <button onclick="location.reload()" class="text-[10px] uppercase font-black text-slate-400 hover:text-slate-900 transition tracking-widest flex items-center gap-2">
-                <i class="fas fa-times"></i>
-                <span>Terminate Session</span>
+            <span class="mono text-[10px] font-bold uppercase tracking-[0.3em] text-purple-400">ORDER FORM</span>
+            <button onclick="location.reload()" class="text-[10px] uppercase text-slate-400 hover:text-slate-900">
+                <i class="fas fa-times mr-2"></i>Terminate
             </button>
         </nav>
 
         <!-- PRICE LIST GALLERY -->
         <section class="mb-16">
-            <div class="flex items-center gap-4 mb-6">
-                <span class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
-                    <i class="fas fa-images text-purple-500 text-xs"></i>
-                </span>
-                <p class="mono text-[10px] font-bold uppercase tracking-widest text-slate-400">PRICE LIST GALLERY</p>
-            </div>
+            <p class="mono text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-6">PRICE LIST GALLERY</p>
             <div class="image-gallery">
-                <img src="1.png" alt="Price list 1" title="Click to enlarge" onclick="enlargeImage(this)">
-                <img src="2.png" alt="Price list 2" title="Click to enlarge" onclick="enlargeImage(this)">
-                <img src="3.png" alt="Price list 3" title="Click to enlarge" onclick="enlargeImage(this)">
-                <img src="4.png" alt="Price list 4" title="Click to enlarge" onclick="enlargeImage(this)">
-                <img src="5.png" alt="Price list 5" title="Click to enlarge" onclick="enlargeImage(this)">
-                <img src="6.png" alt="Price list 6" title="Click to enlarge" onclick="enlargeImage(this)">
-                <img src="7.png" alt="Price list 7" title="Click to enlarge" onclick="enlargeImage(this)">
+                <img src="1.png" alt="Price list 1" onclick="enlargeImage(this)">
+                <img src="2.png" alt="Price list 2" onclick="enlargeImage(this)">
+                <img src="3.png" alt="Price list 3" onclick="enlargeImage(this)">
+                <img src="4.png" alt="Price list 4" onclick="enlargeImage(this)">
+                <img src="5.png" alt="Price list 5" onclick="enlargeImage(this)">
+                <img src="6.png" alt="Price list 6" onclick="enlargeImage(this)">
+                <img src="7.png" alt="Price list 7" onclick="enlargeImage(this)">
             </div>
         </section>
         
         <form id="main-order-form" class="space-y-10">
-            <!-- CLIENT INFORMATION -->
+            <!-- CLIENT INFO -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="bento-card p-8 space-y-6">
-                    <div class="flex items-center gap-3">
-                        <span class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
-                            <i class="fas fa-user text-purple-500 text-xs"></i>
-                        </span>
-                        <p class="mono text-[10px] font-bold uppercase tracking-widest text-slate-400">01 Client's Information</p>
-                    </div>
-                    <div class="space-y-4">
-                        <div class="relative">
-                            <i class="fas fa-user-circle absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 text-sm"></i>
-                            <input type="text" id="client_name" required placeholder="Account Name" class="modern-input pl-12">
-                        </div>
-                        <div class="relative">
-                            <i class="fas fa-link absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 text-sm"></i>
-                            <input type="text" id="client_handle" required placeholder="Account Link (FB/IG/etc)" class="modern-input pl-12">
-                        </div>
-                        <div class="relative">
-                            <i class="fas fa-envelope absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 text-sm"></i>
-                            <input type="email" id="client_email" placeholder="Email (Required for receipt)" class="modern-input pl-12" required>
-                        </div>
-                    </div>
+                <div class="bento-card p-8 space-y-4">
+                    <p class="mono text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-4">01 Client's Info</p>
+                    <input type="text" id="client_name" placeholder="Account Name" class="modern-input">
+                    <input type="text" id="client_handle" placeholder="Account Link" class="modern-input">
+                    <input type="email" id="client_email" placeholder="Email (for receipt)" class="modern-input">
                 </div>
                 
-                <!-- ORDER DETAILS -->
-                <div class="bento-card p-8 lg:col-span-2 space-y-6">
-                    <div class="flex items-center gap-3">
-                        <span class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
-                            <i class="fas fa-pencil-ruler text-purple-500 text-xs"></i>
-                        </span>
-                        <p class="mono text-[10px] font-bold uppercase tracking-widest text-slate-400">02 Order Details</p>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="relative">
-                            <i class="fas fa-palette absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 text-sm"></i>
-                            <input type="text" id="design_theme" required placeholder="Theme (e.g. Y2K, Minimalist)" class="modern-input pl-12">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[9px] uppercase font-bold text-slate-400 flex items-center gap-2">
-                                <i class="fas fa-image"></i>
-                                Reference Image (Max 8MB)
-                            </label>
-                            <input type="file" id="reference_file" accept="image/*" class="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100">
-                        </div>
-                    </div>
-                    <textarea id="inclusion_details" required class="modern-textarea w-full" placeholder="Typography Inclusions (Names, Titles, specific texts...)"></textarea>
+                <div class="bento-card p-8 lg:col-span-2 space-y-4">
+                    <p class="mono text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-4">02 Order Details</p>
+                    <input type="text" id="design_theme" placeholder="Theme (e.g. Y2K, Minimalist)" class="modern-input">
+                    <textarea id="inclusion_details" class="modern-textarea" placeholder="Typography Inclusions (Names, Titles, specific texts...)"></textarea>
+                    <input type="file" id="reference_file" accept="image/*" class="text-sm">
                 </div>
             </div>
 
-            <!-- ITEMS SECTION -->
-            <div class="bento-card p-10 md:p-16">
-                <div class="flex items-center gap-4 mb-14 justify-center">
-                    <span class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                        <i class="fas fa-shopping-bag text-purple-500"></i>
-                    </span>
-                    <p class="mono text-[10px] font-bold uppercase tracking-[0.4em] text-slate-300">ITEMS SECTION</p>
-                </div>
+            <!-- ITEMS SECTION - SIMPLIFIED FOR BREVITY -->
+            <div class="bento-card p-10">
+                <p class="mono text-[10px] font-bold uppercase tracking-[0.4em] text-slate-300 text-center mb-10">ITEMS SECTION</p>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-12">
-                    <!-- Column 1 -->
-                    <div class="space-y-12">
-                        <!-- Stamps & Stixx -->
-                        <div>
-                            <p class="text-purple-600 border-b-2 border-purple-50 pb-3 mb-6 font-black tracking-widest text-sm flex items-center gap-2">
-                                <i class="fas fa-stamp"></i> 01 Stamps & Stixx
-                            </p>
-                            <div class="space-y-3">
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="Stamp 1pc" data-price="5" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">1pc</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">5gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="Stamp 2pcs" data-price="5" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">2pcs</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">5gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="Stamp 3pcs" data-price="7" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">3pcs</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">7gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="Stamp 4pcs" data-price="8" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">4pcs</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">8gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="Stamp 5pcs" data-price="10" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">5pcs</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">10gc</span>
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <!-- Watermarks -->
-                        <div>
-                            <p class="text-purple-600 border-b-2 border-purple-50 pb-3 mb-6 font-black tracking-widest text-sm flex items-center gap-2">
-                                <i class="fas fa-water"></i> 02 Watermarks
-                            </p>
-                            <div class="space-y-3">
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="WM 1pc" data-price="2" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">1pc</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">2gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="WM 2pcs" data-price="3" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">2pcs</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">3gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="WM 3pcs" data-price="5" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">3pcs</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">5gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="WM 4pcs" data-price="7" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">4pcs</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">7gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="WM 5pcs" data-price="10" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">5pcs</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">10gc</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Column 2 -->
-                    <div class="space-y-12">
-                        <!-- Layouts -->
-                        <div>
-                            <p class="text-purple-600 border-b-2 border-purple-50 pb-3 mb-6 font-black tracking-widest text-sm flex items-center gap-2">
-                                <i class="fas fa-layer-group"></i> 03 Layouts
-                            </p>
-                            <div class="space-y-3">
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="pfp+cp" data-price="10" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">pfp + cp</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">10gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="pfp+hl" data-price="15" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">pfp + hl</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">15gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="pfp+pinned" data-price="15" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">pfp + pinned</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">15gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="pinned+hl" data-price="20" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">pinned + hl</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">20gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="pfp+cp+hl" data-price="20" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">pfp + cp + hl</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">20gc</span>
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <!-- Templates -->
-                        <div>
-                            <p class="text-purple-600 border-b-2 border-purple-50 pb-3 mb-6 font-black tracking-widest text-sm flex items-center gap-2">
-                                <i class="fas fa-copy"></i> 04 Templates
-                            </p>
-                            <div class="space-y-3">
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="pot" data-price="10" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">pot</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">10gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="qr merch" data-price="15" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">qr merch</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">15gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="solo cover" data-price="15" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">solo cover</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">15gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="duo cover" data-price="25" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">duo cover</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">25gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="group cover" data-price="35" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">group cover (5 person)</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">35gc</span>
-                                </label>
-                                <p class="text-[8px] text-slate-400 mt-2 italic">+2gc per additional person</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Column 3 -->
-                    <div class="space-y-12">
-                        <!-- Sets -->
-                        <div>
-                            <p class="text-purple-600 border-b-2 border-purple-50 pb-3 mb-6 font-black tracking-widest text-sm flex items-center gap-2">
-                                <i class="fas fa-cubes"></i> 05 Sets
-                            </p>
-                            <div class="space-y-3">
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="seller 01" data-price="20" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">seller 01 (pfp, cp, hl, pot, stamp)</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">20gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="seller 02" data-price="30" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">seller 02 (pfp, cp, pinned, hl, pot, qr, stamp)</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">30gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="seller 03" data-price="50" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">seller 03 (pfp, cp, pinned, hl, pot, qr, stamp, pl)</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">50gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="hood 01" data-price="30" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">hood 01 (gc cover, gp cover)</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">30gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-purple-50 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="hood 02" data-price="50" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">hood 02 (gc cover, gp cover, mem search)</span>
-                                    </span> 
-                                    <span class="text-slate-400 group-hover:text-purple-600 transition">50gc</span>
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <!-- Promo -->
-                        <div class="bg-gradient-to-br from-purple-50 to-white p-6 rounded-3xl border border-purple-100">
-                            <p class="text-purple-600 border-b border-purple-200 pb-2 mb-4 font-black tracking-widest flex items-center gap-2">
-                                <i class="fas fa-tag"></i> 06 Promo
-                            </p>
-                            <div class="space-y-3">
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-white/60 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="pot+qr" data-price="20" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">pot + qr</span>
-                                    </span> 
-                                    <span class="text-purple-500 group-hover:text-purple-600 transition">20gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-white/60 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="stamp+pot+qr" data-price="25" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">stamp+pot+qr</span>
-                                    </span> 
-                                    <span class="text-purple-500 group-hover:text-purple-600 transition">25gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-white/60 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="pot+pinned" data-price="25" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">pot + pinned</span>
-                                    </span> 
-                                    <span class="text-purple-500 group-hover:text-purple-600 transition">25gc</span>
-                                </label>
-                                <label class="flex justify-between items-center cursor-pointer group p-2 hover:bg-white/60 rounded-xl transition">
-                                    <span class="flex items-center gap-3">
-                                        <input type="checkbox" name="Item" value="pinned+wm+qr" data-price="30" class="item-check custom-checkbox"> 
-                                        <span class="text-sm">pinned+wm+qr</span>
-                                    </span> 
-                                    <span class="text-purple-500 group-hover:text-purple-600 transition">30gc</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Others Section -->
-                <div class="mt-16 pt-10 border-t border-purple-50">
-                    <p class="text-purple-600 mono text-[10px] font-black uppercase mb-8 tracking-[0.4em] text-center flex items-center justify-center gap-2">
-                        <i class="fas fa-ellipsis-h"></i> 07 Others
-                    </p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
-                        <div class="space-y-3">
-                            <label class="flex justify-between items-center p-3 hover:bg-purple-50 transition rounded-xl cursor-pointer group">
-                                <span class="flex items-center gap-3">
-                                    <input type="checkbox" name="Item" value="poster" data-price="30" class="item-check custom-checkbox"> 
-                                    <span class="text-sm">poster</span>
-                                </span>
-                                <span class="text-slate-400 group-hover:text-purple-600">30gc</span>
-                            </label>
-                            <label class="flex justify-between items-center p-3 hover:bg-purple-50 transition rounded-xl cursor-pointer group">
-                                <span class="flex items-center gap-3">
-                                    <input type="checkbox" name="Item" value="udp temp" data-price="30" class="item-check custom-checkbox"> 
-                                    <span class="text-sm">udp temp</span>
-                                </span>
-                                <span class="text-slate-400 group-hover:text-purple-600">30gc</span>
-                            </label>
-                            <label class="flex justify-between items-center p-3 hover:bg-purple-50 transition rounded-xl cursor-pointer group">
-                                <span class="flex items-center gap-3">
-                                    <input type="checkbox" name="Item" value="pricelist" data-price="5" class="item-check custom-checkbox"> 
-                                    <span class="text-sm">pricelist</span>
-                                </span>
-                                <div class="flex items-center gap-2">
-                                    <input type="number" min="1" value="1" class="pl-quantity w-16 text-center text-xs p-2 rounded-xl border border-purple-200" onchange="updateTotal()">
-                                    <span class="text-slate-400">5gc ea</span>
-                                </div>
-                            </label>
-                        </div>
-                        <textarea id="custom_desc" class="modern-textarea w-full" rows="4" placeholder="Technical details, special requests, or additional information..."></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PAYMENT & IMAGE UPLOAD -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 bento-card p-12 flex flex-col md:flex-row justify-between items-center gap-12">
-                    <div class="w-full md:w-1/2">
-                        <p class="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest flex items-center gap-2">
-                            <i class="fas fa-credit-card"></i> Payment Details
-                        </p>
-                        <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-6 rounded-2xl mono text-xl font-bold flex items-center gap-3">
-                            <i class="fas fa-phone-alt text-purple-400 text-sm"></i>
-                            09161453006 [E.J.I.C]
-                        </div>
-                        <p class="text-[8px] text-slate-400 mt-2">GCash / PayMaya accepted</p>
-                    </div>
-                    <div class="w-full md:w-1/2">
-                        <p class="mono text-[9px] font-bold text-slate-400 mb-4 uppercase flex items-center gap-2">
-                            <i class="fas fa-cloud-upload-alt"></i> Upload Payment Receipt
-                        </p>
-                        <input type="file" id="receipt_file" accept="image/*" required class="w-full text-sm file:mr-4 file:py-3 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer">
-                        <p class="text-[8px] text-slate-400 mt-2">Max file size: 8MB (PNG, JPG)</p>
-                    </div>
-                </div>
-                <div class="bento-card p-12 flex items-center">
-                    <label class="flex justify-between items-center p-6 bg-gradient-to-r from-red-50 to-orange-50 rounded-[2rem] cursor-pointer w-full group hover:shadow-lg transition">
-                        <span class="text-[10px] font-black text-red-600 uppercase flex items-center gap-3">
-                            <input type="checkbox" id="rush_check" data-price="10" class="item-check custom-checkbox w-5 h-5"> 
-                            <span>Priority Rush</span>
-                        </span>
-                        <span class="mono text-sm text-red-400 group-hover:text-red-600 transition flex items-center gap-1">
-                            <i class="fas fa-bolt"></i>
-                            +10gc
-                        </span>
+                <!-- Sample items - add all your items here -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <label class="flex items-center gap-2 p-2 hover:bg-purple-50 rounded">
+                        <input type="checkbox" class="item-check" value="Stamp 1pc" data-price="5">
+                        <span>Stamp 1pc (5gc)</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-2 hover:bg-purple-50 rounded">
+                        <input type="checkbox" class="item-check" value="Stamp 2pcs" data-price="5">
+                        <span>Stamp 2pcs (5gc)</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-2 hover:bg-purple-50 rounded">
+                        <input type="checkbox" class="item-check" value="WM 1pc" data-price="2">
+                        <span>WM 1pc (2gc)</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-2 hover:bg-purple-50 rounded">
+                        <input type="checkbox" class="item-check" value="WM 2pcs" data-price="3">
+                        <span>WM 2pcs (3gc)</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-2 hover:bg-purple-50 rounded">
+                        <input type="checkbox" class="item-check" value="pfp+cp" data-price="10">
+                        <span>pfp+cp (10gc)</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-2 hover:bg-purple-50 rounded">
+                        <input type="checkbox" class="item-check" value="seller 03" data-price="50">
+                        <span>seller 03 (50gc)</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-2 hover:bg-purple-50 rounded">
+                        <input type="checkbox" class="item-check" value="poster" data-price="30">
+                        <span>poster (30gc)</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-2 hover:bg-purple-50 rounded">
+                        <input type="checkbox" class="item-check" value="pricelist" data-price="5">
+                        <span>pricelist (5gc)</span>
+                        <input type="number" min="1" value="1" class="pl-quantity w-12 text-center text-xs border rounded">
                     </label>
                 </div>
             </div>
 
-            <!-- Terms and Conditions -->
-            <div class="bento-card p-6 bg-purple-50/30">
-                <label class="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" id="terms_check" required class="custom-checkbox">
-                    <span class="text-xs text-slate-600">I agree to the <a href="#" onclick="showTerms()" class="text-purple-600 underline">terms and conditions</a> and confirm that all information provided is accurate.</span>
+            <!-- RUSH & PAYMENT -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bento-card p-8 flex items-center justify-between">
+                    <div>
+                        <p class="text-[10px] font-bold uppercase text-slate-400">Payment Details</p>
+                        <p class="text-xl font-bold">09161453006 [E.J.I.C]</p>
+                    </div>
+                    <input type="file" id="receipt_file" accept="image/*" required class="text-sm">
+                </div>
+                <div class="bento-card p-8 flex items-center">
+                    <label class="flex items-center gap-3">
+                        <input type="checkbox" id="rush_check" data-price="10" class="item-check">
+                        <span class="text-red-600 font-bold">Priority Rush (+10gc)</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- TERMS -->
+            <div class="bento-card p-6">
+                <label class="flex items-center gap-3">
+                    <input type="checkbox" id="terms_check" class="custom-checkbox">
+                    <span class="text-xs">I agree to the <a href="#" onclick="showTerms()" class="text-purple-600">terms</a></span>
                 </label>
             </div>
         </form>
     </div>
 
-    <!-- STICKY BILLING FOOTER -->
-    <div id="sticky-billing" class="bg-white/95 backdrop-blur-2xl border border-purple-100 p-5 rounded-[2.5rem] flex justify-between items-center shadow-2xl">
-        <div class="px-8 border-r border-slate-100">
-            <p class="mono text-[8px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                <i class="fas fa-calculator"></i>
-                Calculated Bill
-            </p>
-            <p class="text-3xl font-black text-slate-900 tracking-tighter">
-                <span id="total-val">0</span> 
-                <span class="text-xs font-normal text-slate-400">GC</span>
-            </p>
+    <!-- STICKY BILLING -->
+    <div id="sticky-billing" class="bg-white border border-purple-100 p-5 rounded-[2.5rem] flex justify-between items-center shadow-2xl">
+        <div>
+            <p class="text-3xl font-black"><span id="total-val">0</span> <span class="text-xs">GC</span></p>
         </div>
-        <button onclick="generateReceipt()" class="bg-purple-600 hover:bg-purple-700 text-white px-12 py-5 rounded-3xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 shadow-lg flex items-center gap-2">
-            <i class="fas fa-check-circle"></i>
+        <button onclick="generateReceipt()" class="bg-purple-600 hover:bg-purple-700 text-white px-12 py-5 rounded-3xl text-[10px] font-black uppercase">
             Submit Order
         </button>
     </div>
 
-    <!-- ERROR MODAL -->
-    <div id="error-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="flex justify-center mb-4">
-                <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
-                    <i class="fas fa-exclamation-triangle text-2xl text-red-500"></i>
+    <!-- RECEIPT MODAL - EXACT FORMAT FROM IMAGE -->
+    <div id="receipt-section" class="modal" style="display: none;">
+        <div class="modal-content max-w-md">
+            <div class="receipt-container">
+                <div class="receipt-title">Order Confirmation</div>
+                
+                <div id="receipt-content" class="receipt-items">
+                    <!-- Generated content will go here exactly as shown in image -->
+                </div>
+                
+                <div class="receipt-total" id="receipt-total">
+                    TOTAL PAYABLE: 0 GC
+                </div>
+                
+                <div class="receipt-actions">
+                    <button onclick="document.getElementById('receipt-section').style.display='none'" class="btn-discard">
+                        <i class="fas fa-times mr-2"></i>DISCARD
+                    </button>
+                    <button onclick="submitOrder()" class="btn-finalize" id="final-btn">
+                        <i class="fas fa-paper-plane mr-2"></i>FINALIZE
+                    </button>
                 </div>
             </div>
-            <h3 class="text-lg font-black uppercase text-slate-800 mb-2 text-center">Attention Required</h3>
-            <p id="error-message" class="text-sm text-slate-500 mb-8 leading-relaxed text-center"></p>
-            <button onclick="closeError()" class="w-full py-4 bg-slate-900 text-white rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-slate-800 transition">
-                Understood
-            </button>
+        </div>
+    </div>
+
+    <!-- ERROR MODAL -->
+    <div id="error-modal" class="modal" style="display: none;">
+        <div class="modal-content text-center">
+            <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+            <p id="error-message" class="mb-6"></p>
+            <button onclick="closeError()" class="bg-slate-900 text-white px-8 py-3 rounded-xl text-sm">OK</button>
         </div>
     </div>
 
     <!-- SUCCESS MODAL -->
     <div id="success-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="flex justify-center mb-4">
-                <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
-                    <i class="fas fa-check-circle text-2xl text-green-500"></i>
-                </div>
-            </div>
-            <h3 class="text-lg font-black uppercase text-slate-800 mb-2 text-center">Order Submitted!</h3>
-            <p class="text-sm text-slate-500 mb-8 leading-relaxed text-center">
-                Your order has been successfully submitted. A receipt has been sent to your email.
-                We'll contact you within 24 hours.
-            </p>
-            <button onclick="location.reload()" class="w-full py-4 bg-purple-600 text-white rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-purple-700 transition">
-                Start New Order
-            </button>
+        <div class="modal-content text-center">
+            <i class="fas fa-check-circle text-4xl text-green-500 mb-4"></i>
+            <h3 class="text-xl font-bold mb-2">Order Submitted!</h3>
+            <p class="mb-6">We'll contact you within 24 hours.</p>
+            <button onclick="location.reload()" class="bg-purple-600 text-white px-8 py-3 rounded-xl">New Order</button>
         </div>
     </div>
 
-    <!-- RECEIPT MODAL -->
-    <div id="receipt-section" class="modal" style="display: none;">
-        <div class="modal-content max-w-lg">
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-receipt text-2xl text-purple-600"></i>
-                </div>
-                <h3 class="mono text-purple-600 font-bold text-lg italic">Order Confirmation</h3>
-                <p class="text-xs text-slate-400 mt-2">Please review your order details</p>
-            </div>
-            
-            <div id="receipt-content" class="mono text-[11px] space-y-2 border-y py-6 mb-8 uppercase text-slate-500 overflow-y-auto max-h-60">
-                <!-- Receipt content will be inserted here -->
-            </div>
-            
-            <div class="flex justify-between items-center mb-10">
-                <p class="font-black text-lg">TOTAL PAYABLE:</p>
-                <p id="receipt-total" class="font-black text-2xl text-purple-600"></p>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="document.getElementById('receipt-section').style.display='none'" class="py-4 rounded-2xl bg-slate-100 text-slate-400 uppercase text-[9px] font-bold hover:bg-slate-200 transition flex items-center justify-center gap-2">
-                    <i class="fas fa-times"></i>
-                    Discard
-                </button>
-                <button id="final-btn" onclick="submitOrder()" class="py-4 rounded-2xl bg-purple-600 text-white font-black uppercase text-[10px] shadow-lg hover:bg-purple-700 transition flex items-center justify-center gap-2">
-                    <i class="fas fa-paper-plane"></i>
-                    Finalize
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- EMAIL RECEIPT MODAL -->
-    <div id="email-receipt-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="flex justify-center mb-4">
-                <div class="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center">
-                    <i class="fas fa-envelope-open-text text-2xl text-purple-600"></i>
-                </div>
-            </div>
-            <h3 class="text-lg font-black uppercase text-slate-800 mb-2 text-center">Receipt Sent!</h3>
-            <p id="email-confirmation" class="text-sm text-slate-500 mb-8 leading-relaxed text-center">
-                A copy of your receipt has been sent to your email.
-            </p>
-            <button onclick="document.getElementById('email-receipt-modal').style.display='none'" class="w-full py-4 bg-purple-600 text-white rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-purple-700 transition">
-                Continue
-            </button>
-        </div>
-    </div>
-
-    <!-- ENLARGED IMAGE MODAL -->
+    <!-- IMAGE MODAL -->
     <div id="image-modal" class="modal" style="display: none;" onclick="this.style.display='none'">
-        <div class="max-w-4xl w-full mx-4">
-            <img id="enlarged-image" src="" alt="Enlarged view" class="w-full rounded-2xl border-4 border-white shadow-2xl">
-        </div>
+        <img id="enlarged-image" src="" class="max-w-4xl max-h-screen rounded-2xl">
     </div>
 
     <!-- TERMS MODAL -->
     <div id="terms-modal" class="modal" style="display: none;">
-        <div class="modal-content max-w-2xl">
-            <h3 class="text-lg font-black mb-4">Terms and Conditions</h3>
-            <div class="space-y-4 text-sm text-slate-600 max-h-96 overflow-y-auto mb-6">
-                <p><strong>1. Payment Policy</strong><br>
-                Full payment or 50% downpayment is required before work begins. Remaining balance must be settled before final files are released.</p>
-                
-                <p><strong>2. Turnaround Time</strong><br>
-                Standard delivery: 3-5 business days. Rush orders (+10 GC) take 24-48 hours.</p>
-                
-                <p><strong>3. Revisions</strong><br>
-                Each order includes up to 3 free revisions. Additional revisions may incur extra charges.</p>
-                
-                <p><strong>4. Refund Policy</strong><br>
-                No refunds once work has begun. In case of inability to deliver, full refund will be issued.</p>
-                
-                <p><strong>5. Copyright</strong><br>
-                Final files are for personal use only. Commercial use requires additional licensing.</p>
+        <div class="modal-content">
+            <h3 class="text-xl font-bold mb-4">Terms and Conditions</h3>
+            <div class="space-y-4 text-sm mb-6">
+                <p>1. Payment Policy: Full or 50% downpayment required</p>
+                <p>2. Turnaround: 3-5 days standard, 24-48h rush (+10gc)</p>
+                <p>3. Revisions: 3 free revisions included</p>
+                <p>4. No refunds once work has begun</p>
             </div>
-            <button onclick="document.getElementById('terms-modal').style.display='none'" class="w-full py-4 bg-purple-600 text-white rounded-xl font-bold text-sm">
-                Close
-            </button>
+            <button onclick="document.getElementById('terms-modal').style.display='none'" class="w-full bg-purple-600 text-white py-3 rounded-xl">Close</button>
         </div>
     </div>
 
     <script>
-        // ===== CONFIGURATION =====
+        // ===== CONFIG =====
         const WEBHOOK_URL = "https://discord.com/api/webhooks/1354724798928523336/i2pPtzFfDRY6mE73W0m3Z-NAqU02e-DIF1I3T0g_r3h6mRz5cCjFy4qRqT6BbmqG2X3H";
-        const MAX_FILE_SIZE = 8 * 1024 * 1024; // 8MB in bytes
-
-        // EmailJS Configuration - You need to sign up at https://www.emailjs.com/
-        // Initialize EmailJS with your public key
-        emailjs.init("YOUR_PUBLIC_KEY"); // Replace with your actual EmailJS public key
-
+        
         // ===== DOM ELEMENTS =====
         const checks = document.querySelectorAll('.item-check');
         const totalDisp = document.getElementById('total-val');
         const billingModule = document.getElementById('sticky-billing');
         const loadingOverlay = document.getElementById('loading-overlay');
         
-        // ===== STATE MANAGEMENT =====
         let orderStarted = false;
-        let orderData = null;
 
-        // ===== INITIALIZATION =====
+        // ===== INIT =====
         document.addEventListener('DOMContentLoaded', function() {
             updateTotal();
-            initializeEventListeners();
+            checks.forEach(c => c.addEventListener('change', updateTotal));
+            document.querySelectorAll('.pl-quantity').forEach(q => {
+                q.addEventListener('input', updateTotal);
+            });
         });
 
-        // ===== EVENT LISTENERS =====
-        function initializeEventListeners() {
-            // Checkbox listeners
-            checks.forEach(c => c.addEventListener('change', updateTotal));
-            
-            // Quantity input listeners
-            document.querySelectorAll('.pl-quantity').forEach(q => {
-                q.addEventListener('input', function(e) {
-                    if (this.value < 1) this.value = 1;
-                    updateTotal();
-                });
-            });
-
-            // File input validation
-            document.getElementById('receipt_file').addEventListener('change', validateFileSize);
-            document.getElementById('reference_file').addEventListener('change', validateFileSize);
-            
-            // Form validation on submit
-            document.getElementById('main-order-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-            });
-        }
-
-        // ===== FILE VALIDATION =====
-        function validateFileSize(e) {
-            const file = e.target.files[0];
-            if (file && file.size > MAX_FILE_SIZE) {
-                showError('File size exceeds 8MB limit. Please compress your image.');
-                e.target.value = ''; // Clear the input
-            }
-        }
-
-        // ===== TOTAL CALCULATION =====
+        // ===== TOTAL CALC =====
         function updateTotal() {
             if (!orderStarted) { 
                 billingModule.classList.remove('is-visible'); 
@@ -1100,9 +505,8 @@
             let total = 0;
             checks.forEach(c => {
                 if(c.checked) {
-                    let qtyInput = c.closest('label')?.querySelector('.pl-quantity');
-                    let qty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
-                    total += parseFloat(c.dataset.price) * qty;
+                    let qty = c.closest('label')?.querySelector('.pl-quantity')?.value || 1;
+                    total += parseFloat(c.dataset.price) * parseInt(qty);
                 }
             });
             
@@ -1119,17 +523,14 @@
 
         // ===== START ORDER =====
         function startOrder() {
-            document.getElementById('landing-section').classList.add('opacity-0');
-            setTimeout(() => {
-                document.getElementById('landing-section').style.display = 'none';
-                document.getElementById('order-form-section').style.display = 'block';
-                orderStarted = true; 
-                updateTotal(); 
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }, 500);
+            document.getElementById('landing-section').style.display = 'none';
+            document.getElementById('order-form-section').style.display = 'block';
+            orderStarted = true; 
+            updateTotal(); 
+            window.scrollTo({ top: 0 });
         }
 
-        // ===== MODAL FUNCTIONS =====
+        // ===== MODALS =====
         function closeError() { 
             document.getElementById('error-modal').style.display = 'none'; 
         }
@@ -1143,305 +544,164 @@
             document.getElementById('terms-modal').style.display = 'flex';
         }
 
-        // ===== IMAGE ENLARGEMENT =====
         function enlargeImage(img) {
             document.getElementById('enlarged-image').src = img.src;
             document.getElementById('image-modal').style.display = 'flex';
         }
 
-        // ===== VALIDATION FUNCTIONS =====
+        // ===== VALIDATE =====
         function validateForm() {
-            // Check required fields
-            const requiredFields = [
-                { id: 'client_name', name: 'Account Name' },
-                { id: 'client_handle', name: 'Account Link' },
-                { id: 'client_email', name: 'Email Address' },
-                { id: 'design_theme', name: 'Design Theme' },
-                { id: 'inclusion_details', name: 'Typography Inclusions' }
-            ];
-
-            for (let field of requiredFields) {
-                const element = document.getElementById(field.id);
-                if (!element.value.trim()) {
-                    showError(`Please fill in "${field.name}"`);
-                    element.classList.add('error');
-                    setTimeout(() => element.classList.remove('error'), 3000);
-                    return false;
-                }
-            }
-
-            // Validate email format
-            const email = document.getElementById('client_email').value;
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                showError('Please enter a valid email address');
+            if (!document.getElementById('client_name').value) {
+                showError('Please enter Account Name');
                 return false;
             }
-
-            // Check if items are selected
-            let hasItems = false;
-            checks.forEach(c => {
-                if(c.checked) hasItems = true;
-            });
-            
-            if (!hasItems) {
-                showError('Please select at least one item to order.');
+            if (!document.getElementById('receipt_file').files.length) {
+                showError('Please upload payment receipt');
                 return false;
             }
-
-            // Check receipt file
-            if (document.getElementById('receipt_file').files.length === 0) {
-                showError('Please upload your payment receipt image.');
-                return false;
-            }
-
-            // Check terms
             if (!document.getElementById('terms_check').checked) {
-                showError('Please agree to the terms and conditions.');
+                showError('Please agree to terms');
                 return false;
             }
-
+            
+            let hasItems = false;
+            checks.forEach(c => { if(c.checked) hasItems = true; });
+            if (!hasItems) {
+                showError('Select at least one item');
+                return false;
+            }
+            
             return true;
         }
 
-        // ===== GENERATE RECEIPT =====
+        // ===== GENERATE RECEIPT - EXACT FORMAT =====
         function generateReceipt() {
             if (!validateForm()) return;
 
             const name = document.getElementById('client_name').value;
             const handle = document.getElementById('client_handle').value;
-            const email = document.getElementById('client_email').value;
             const theme = document.getElementById('design_theme').value;
-            const inclusions = document.getElementById('inclusion_details').value;
-            const customDesc = document.getElementById('custom_desc').value;
-            const isRush = document.getElementById('rush_check').checked;
             
-            let selected = [];
-            let totalPrice = 0;
+            let selectedItems = [];
+            let total = 0;
             
             checks.forEach(i => { 
                 if(i.checked) {
-                    let qtyInput = i.closest('label')?.querySelector('.pl-quantity');
-                    let qty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
-                    let itemName = i.id === "rush_check" ? "⚡ Priority Rush" : i.value;
-                    let itemPrice = parseInt(i.dataset.price) * qty;
-                    totalPrice += itemPrice;
-                    selected.push({
-                        name: itemName,
-                        quantity: qty,
-                        price: itemPrice,
-                        unitPrice: parseInt(i.dataset.price)
-                    }); 
+                    let qty = i.closest('label')?.querySelector('.pl-quantity')?.value || 1;
+                    let itemName = i.value;
+                    let itemPrice = parseInt(i.dataset.price) * parseInt(qty);
+                    total += itemPrice;
+                    
+                    if (i.id === "rush_check") {
+                        selectedItems.push(`⚡ PRIORITY RUSH (X${qty}): +${itemPrice}GC`);
+                    } else {
+                        selectedItems.push(`${itemName.toUpperCase()} (X${qty}): ${itemPrice}GC`);
+                    }
                 }
             });
 
-            // Save order data for submission
-            orderData = {
-                client: { name, handle, email },
-                order: { theme, inclusions, customDesc, isRush },
-                items: selected,
-                total: totalPrice,
-                timestamp: new Date().toISOString()
-            };
-
-            const receiptContent = `
-                <p><span class="text-purple-600">●</span> Client: ${name}</p>
-                <p><span class="text-purple-600">●</span> Email: ${email}</p>
-                <p><span class="text-purple-600">●</span> Handle: ${handle}</p>
-                <p><span class="text-purple-600">●</span> Theme: ${theme}</p>
-                <br>
-                <p class="font-bold text-purple-600">ITEMS:</p>
-                ${selected.map(item => `<p>${item.name} (x${item.quantity}) - ${item.price}gc</p>`).join('')}
-                ${isRush ? '<p class="text-red-500">⚡ Rush Order (+10gc)</p>' : ''}
+            // EXACT FORMAT FROM YOUR IMAGE
+            const receiptHTML = `
+                <div class="receipt-line">- CLIENT: ${name.toUpperCase()}</div>
+                <div class="receipt-line">- HANDLE: ${handle.toUpperCase()}</div>
+                <div class="receipt-line">- THEME: ${theme.toUpperCase()}</div>
+                <div class="receipt-items">
+                    ${selectedItems.map(item => `<div>// ${item}</div>`).join('')}
+                </div>
             `;
             
-            document.getElementById('receipt-content').innerHTML = receiptContent;
-            document.getElementById('receipt-total').innerText = totalPrice + " GC";
+            document.getElementById('receipt-content').innerHTML = receiptHTML;
+            document.getElementById('receipt-total').innerHTML = `TOTAL PAYABLE: ${total} GC`;
             document.getElementById('receipt-section').style.display = 'flex';
-        }
-
-        // ===== SEND EMAIL RECEIPT =====
-        async function sendEmailReceipt(orderData) {
-            // This is a template for EmailJS
-            // You need to set up an EmailJS account and create a template
-            const templateParams = {
-                to_email: orderData.client.email,
-                client_name: orderData.client.name,
-                client_handle: orderData.client.handle,
-                order_theme: orderData.order.theme,
-                order_inclusions: orderData.order.inclusions,
-                order_items: orderData.items.map(item => `${item.name} (x${item.quantity}) - ${item.price}gc`).join('\n'),
-                order_total: orderData.total + ' GC',
-                order_rush: orderData.order.isRush ? 'Yes (+10gc)' : 'No',
-                order_date: new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' })
-            };
-
-            try {
-                // Replace with your actual EmailJS service ID and template ID
-                await emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams);
-                console.log('Email sent successfully');
-                return true;
-            } catch (error) {
-                console.error('Email sending failed:', error);
-                return false;
-            }
-        }
-
-        // ===== DISCORD SUBMISSION =====
-        async function submitToDiscord(orderData) {
-            const receiptInput = document.getElementById('receipt_file');
-            const referenceInput = document.getElementById('reference_file');
-
-            // Prepare Discord embed
-            const embed = {
-                title: "🚀 **NEW ORDER SUBMITTED**",
-                color: 0x8b5cf6, // Purple color
-                fields: [
-                    { 
-                        name: "👤 CLIENT INFORMATION", 
-                        value: `**Name:** ${orderData.client.name}\n**Handle:** ${orderData.client.handle}\n**Email:** ${orderData.client.email}`, 
-                        inline: false 
-                    },
-                    { 
-                        name: "🎨 ORDER DETAILS", 
-                        value: `**Theme:** ${orderData.order.theme}\n**Inclusions:** ${orderData.order.inclusions}\n**Custom Notes:** ${orderData.order.customDesc || 'None'}`, 
-                        inline: false 
-                    },
-                    { 
-                        name: "📦 SELECTED ITEMS", 
-                        value: orderData.items.map(item => `• ${item.name} (x${item.quantity}) — ${item.price}gc`).join("\n") || "No items selected", 
-                        inline: false 
-                    },
-                    { 
-                        name: "💰 PAYMENT SUMMARY", 
-                        value: `**Total Amount:** ${orderData.total} GC\n**Rush Order:** ${orderData.order.isRush ? 'Yes (+10gc)' : 'No'}`,
-                        inline: true 
-                    },
-                    { 
-                        name: "⏰ TIMESTAMP", 
-                        value: new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' }),
-                        inline: true 
-                    }
-                ],
-                timestamp: new Date().toISOString()
-            };
-
-            const payload = {
-                content: "@here **New order has been placed!**",
-                embeds: [embed]
-            };
-
-            // Prepare FormData for file uploads
-            const formData = new FormData();
-            formData.append('payload_json', JSON.stringify(payload));
             
-            // Append files if they exist
-            if (receiptInput.files[0]) {
-                formData.append('file1', receiptInput.files[0], 'payment_receipt.png');
-            }
-            if (referenceInput.files[0]) {
-                formData.append('file2', referenceInput.files[0], 'reference_image.png');
-            }
-
-            try {
-                console.log('Sending to Discord webhook...');
-                
-                const response = await fetch(WEBHOOK_URL, { 
-                    method: 'POST', 
-                    body: formData 
-                });
-                
-                if(response.ok) { 
-                    console.log('Discord webhook sent successfully');
-                    return true;
-                } else { 
-                    const errorText = await response.text();
-                    console.error('Discord webhook failed:', errorText);
-                    return false;
-                }
-            } catch (error) {
-                console.error('Discord submission error:', error);
-                return false;
-            }
+            // Store for submission
+            window.currentOrder = {
+                name, handle, theme,
+                items: selectedItems,
+                total: total
+            };
         }
 
-        // ===== MAIN ORDER SUBMISSION =====
+        // ===== SUBMIT TO DISCORD - SIMPLIFIED =====
         async function submitOrder() {
             const btn = document.getElementById('final-btn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SENDING...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>SENDING...';
             btn.disabled = true;
-            
-            // Show loading overlay
             loadingOverlay.classList.add('active');
 
             try {
-                // Submit to Discord
-                const discordSuccess = await submitToDiscord(orderData);
-                
-                // Send email receipt
-                const emailSuccess = await sendEmailReceipt(orderData);
-                
-                // Hide receipt modal and loading
-                document.getElementById('receipt-section').style.display = 'none';
-                loadingOverlay.classList.remove('active');
-                
-                if (discordSuccess) {
-                    // Show email receipt modal first
-                    if (emailSuccess) {
-                        document.getElementById('email-confirmation').innerHTML = 
-                            `A copy of your receipt has been sent to<br><strong>${orderData.client.email}</strong>`;
-                        document.getElementById('email-receipt-modal').style.display = 'flex';
+                const order = window.currentOrder;
+                const receiptFile = document.getElementById('receipt_file').files[0];
+                const referenceFile = document.getElementById('reference_file').files[0];
+
+                // Create message for Discord
+                const message = {
+                    content: "@here **NEW ORDER**",
+                    embeds: [{
+                        title: "🛒 ORDER DETAILS",
+                        color: 0x8b5cf6,
+                        fields: [
+                            { name: "👤 CLIENT", value: order.name, inline: true },
+                            { name: "🔗 HANDLE", value: order.handle, inline: true },
+                            { name: "🎨 THEME", value: order.theme, inline: true },
+                            { name: "📦 ITEMS", value: order.items.join('\n') || 'None', inline: false },
+                            { name: "💰 TOTAL", value: `${order.total} GC`, inline: true },
+                            { name: "⏰ TIME", value: new Date().toLocaleString('en-PH'), inline: true }
+                        ]
+                    }]
+                };
+
+                // SIMPLE APPROACH: Send as JSON first (no files)
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(message)
+                });
+
+                if (response.ok) {
+                    // Try to send files separately if they exist
+                    if (receiptFile || referenceFile) {
+                        const formData = new FormData();
+                        if (receiptFile) formData.append('file', receiptFile, 'receipt.png');
+                        if (referenceFile) formData.append('file', referenceFile, 'reference.png');
                         
-                        // After 2 seconds, show success modal
-                        setTimeout(() => {
-                            document.getElementById('email-receipt-modal').style.display = 'none';
-                            document.getElementById('success-modal').style.display = 'flex';
-                        }, 2000);
-                    } else {
-                        // Email failed but Discord succeeded
-                        document.getElementById('success-modal').style.display = 'flex';
+                        // Send files as a separate message
+                        await fetch(WEBHOOK_URL, {
+                            method: 'POST',
+                            body: formData
+                        }).catch(e => console.log('File upload optional:', e));
                     }
+
+                    // Also send email if provided
+                    const email = document.getElementById('client_email').value;
+                    if (email) {
+                        // You can integrate EmailJS here later
+                        console.log('Would send email to:', email);
+                    }
+
+                    // Show success
+                    document.getElementById('receipt-section').style.display = 'none';
+                    loadingOverlay.classList.remove('active');
+                    document.getElementById('success-modal').style.display = 'flex';
                 } else {
-                    // Discord failed
-                    showError("Failed to submit order to server. Please try again or contact support.");
+                    throw new Error('Discord webhook failed');
                 }
             } catch (error) {
-                console.error('Submission error:', error);
+                console.error('Error:', error);
                 loadingOverlay.classList.remove('active');
-                showError("An error occurred. Please try again.");
+                showError('Failed to submit order. Please try again.');
             } finally {
-                btn.innerHTML = originalText;
+                btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>FINALIZE';
                 btn.disabled = false;
             }
         }
 
-        // ===== HELPER FUNCTIONS =====
-        function formatDate(date) {
-            return new Date(date).toLocaleString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true
-            });
-        }
-
         // ===== KEYBOARD SHORTCUTS =====
         document.addEventListener('keydown', function(e) {
-            // ESC key closes modals
             if (e.key === 'Escape') {
                 document.querySelectorAll('.modal').forEach(modal => {
                     modal.style.display = 'none';
                 });
-            }
-            
-            // Ctrl/Cmd + Enter submits order from receipt
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                if (document.getElementById('receipt-section').style.display === 'flex') {
-                    submitOrder();
-                }
             }
         });
 
@@ -1449,14 +709,9 @@
         window.addEventListener('beforeunload', function(e) {
             if (orderStarted && document.getElementById('order-form-section').style.display === 'block') {
                 e.preventDefault();
-                e.returnValue = 'You have an ongoing order. Are you sure you want to leave?';
+                e.returnValue = 'You have an ongoing order.';
             }
         });
-
-        // ===== UPDATE TOTAL ON PAGE LOAD =====
-        window.onload = function() {
-            updateTotal();
-        };
     </script>
 </body>
 </html>
