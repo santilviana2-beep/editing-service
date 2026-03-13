@@ -14,6 +14,9 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+    <!-- EmailJS for sending emails -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
     <style>
         /* ===== CUSTOM CSS VARIABLES ===== */
         :root { 
@@ -207,7 +210,8 @@
         #order-form-section, 
         #receipt-section, 
         #error-modal,
-        #success-modal {
+        #success-modal,
+        #email-receipt-modal {
             display: none;
         }
         
@@ -502,7 +506,7 @@
                         </div>
                         <div class="relative">
                             <i class="fas fa-envelope absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 text-sm"></i>
-                            <input type="email" id="client_email" placeholder="Email (Optional)" class="modern-input pl-12">
+                            <input type="email" id="client_email" placeholder="Email (Required for receipt)" class="modern-input pl-12" required>
                         </div>
                     </div>
                 </div>
@@ -936,7 +940,8 @@
             </div>
             <h3 class="text-lg font-black uppercase text-slate-800 mb-2 text-center">Order Submitted!</h3>
             <p class="text-sm text-slate-500 mb-8 leading-relaxed text-center">
-                Your order has been successfully submitted. We'll contact you within 24 hours.
+                Your order has been successfully submitted. A receipt has been sent to your email.
+                We'll contact you within 24 hours.
             </p>
             <button onclick="location.reload()" class="w-full py-4 bg-purple-600 text-white rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-purple-700 transition">
                 Start New Order
@@ -952,6 +957,7 @@
                     <i class="fas fa-receipt text-2xl text-purple-600"></i>
                 </div>
                 <h3 class="mono text-purple-600 font-bold text-lg italic">Order Confirmation</h3>
+                <p class="text-xs text-slate-400 mt-2">Please review your order details</p>
             </div>
             
             <div id="receipt-content" class="mono text-[11px] space-y-2 border-y py-6 mb-8 uppercase text-slate-500 overflow-y-auto max-h-60">
@@ -968,11 +974,29 @@
                     <i class="fas fa-times"></i>
                     Discard
                 </button>
-                <button id="final-btn" onclick="submitToDiscord()" class="py-4 rounded-2xl bg-purple-600 text-white font-black uppercase text-[10px] shadow-lg hover:bg-purple-700 transition flex items-center justify-center gap-2">
+                <button id="final-btn" onclick="submitOrder()" class="py-4 rounded-2xl bg-purple-600 text-white font-black uppercase text-[10px] shadow-lg hover:bg-purple-700 transition flex items-center justify-center gap-2">
                     <i class="fas fa-paper-plane"></i>
                     Finalize
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- EMAIL RECEIPT MODAL -->
+    <div id="email-receipt-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="flex justify-center mb-4">
+                <div class="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center">
+                    <i class="fas fa-envelope-open-text text-2xl text-purple-600"></i>
+                </div>
+            </div>
+            <h3 class="text-lg font-black uppercase text-slate-800 mb-2 text-center">Receipt Sent!</h3>
+            <p id="email-confirmation" class="text-sm text-slate-500 mb-8 leading-relaxed text-center">
+                A copy of your receipt has been sent to your email.
+            </p>
+            <button onclick="document.getElementById('email-receipt-modal').style.display='none'" class="w-full py-4 bg-purple-600 text-white rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-purple-700 transition">
+                Continue
+            </button>
         </div>
     </div>
 
@@ -1014,6 +1038,10 @@
         const WEBHOOK_URL = "https://discord.com/api/webhooks/1354724798928523336/i2pPtzFfDRY6mE73W0m3Z-NAqU02e-DIF1I3T0g_r3h6mRz5cCjFy4qRqT6BbmqG2X3H";
         const MAX_FILE_SIZE = 8 * 1024 * 1024; // 8MB in bytes
 
+        // EmailJS Configuration - You need to sign up at https://www.emailjs.com/
+        // Initialize EmailJS with your public key
+        emailjs.init("YOUR_PUBLIC_KEY"); // Replace with your actual EmailJS public key
+
         // ===== DOM ELEMENTS =====
         const checks = document.querySelectorAll('.item-check');
         const totalDisp = document.getElementById('total-val');
@@ -1022,7 +1050,7 @@
         
         // ===== STATE MANAGEMENT =====
         let orderStarted = false;
-        let selectedItems = [];
+        let orderData = null;
 
         // ===== INITIALIZATION =====
         document.addEventListener('DOMContentLoaded', function() {
@@ -1127,6 +1155,7 @@
             const requiredFields = [
                 { id: 'client_name', name: 'Account Name' },
                 { id: 'client_handle', name: 'Account Link' },
+                { id: 'client_email', name: 'Email Address' },
                 { id: 'design_theme', name: 'Design Theme' },
                 { id: 'inclusion_details', name: 'Typography Inclusions' }
             ];
@@ -1139,6 +1168,14 @@
                     setTimeout(() => element.classList.remove('error'), 3000);
                     return false;
                 }
+            }
+
+            // Validate email format
+            const email = document.getElementById('client_email').value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showError('Please enter a valid email address');
+                return false;
             }
 
             // Check if items are selected
@@ -1173,48 +1210,12 @@
 
             const name = document.getElementById('client_name').value;
             const handle = document.getElementById('client_handle').value;
+            const email = document.getElementById('client_email').value;
             const theme = document.getElementById('design_theme').value;
+            const inclusions = document.getElementById('inclusion_details').value;
+            const customDesc = document.getElementById('custom_desc').value;
+            const isRush = document.getElementById('rush_check').checked;
             
-            let selected = [];
-            checks.forEach(i => { 
-                if(i.checked) {
-                    let qtyInput = i.closest('label')?.querySelector('.pl-quantity');
-                    let qty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
-                    let itemName = i.id === "rush_check" ? "⚡ Priority Rush" : i.value;
-                    selected.push(`// ${itemName} (x${qty}): ${parseInt(i.dataset.price) * qty}gc`); 
-                }
-            });
-
-            // Save selected items for Discord submission
-            selectedItems = selected;
-
-            const receiptContent = `
-                <p><span class="text-purple-600">●</span> Client: ${name}</p>
-                <p><span class="text-purple-600">●</span> Handle: ${handle}</p>
-                <p><span class="text-purple-600">●</span> Theme: ${theme}</p>
-                <br>
-                <p class="font-bold text-purple-600">INVENTORY:</p>
-                ${selected.map(item => `<p>${item}</p>`).join('')}
-            `;
-            
-            document.getElementById('receipt-content').innerHTML = receiptContent;
-            document.getElementById('receipt-total').innerText = totalDisp.innerText + " GC";
-            document.getElementById('receipt-section').style.display = 'flex';
-        }
-
-        // ===== DISCORD SUBMISSION =====
-        async function submitToDiscord() {
-            const btn = document.getElementById('final-btn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SENDING...';
-            btn.disabled = true;
-            
-            // Show loading overlay
-            loadingOverlay.classList.add('active');
-
-            const receiptInput = document.getElementById('receipt_file');
-            const referenceInput = document.getElementById('reference_file');
-
             let selected = [];
             let totalPrice = 0;
             
@@ -1225,9 +1226,71 @@
                     let itemName = i.id === "rush_check" ? "⚡ Priority Rush" : i.value;
                     let itemPrice = parseInt(i.dataset.price) * qty;
                     totalPrice += itemPrice;
-                    selected.push(`• ${itemName} (x${qty}) — ${itemPrice}gc`); 
+                    selected.push({
+                        name: itemName,
+                        quantity: qty,
+                        price: itemPrice,
+                        unitPrice: parseInt(i.dataset.price)
+                    }); 
                 }
             });
+
+            // Save order data for submission
+            orderData = {
+                client: { name, handle, email },
+                order: { theme, inclusions, customDesc, isRush },
+                items: selected,
+                total: totalPrice,
+                timestamp: new Date().toISOString()
+            };
+
+            const receiptContent = `
+                <p><span class="text-purple-600">●</span> Client: ${name}</p>
+                <p><span class="text-purple-600">●</span> Email: ${email}</p>
+                <p><span class="text-purple-600">●</span> Handle: ${handle}</p>
+                <p><span class="text-purple-600">●</span> Theme: ${theme}</p>
+                <br>
+                <p class="font-bold text-purple-600">ITEMS:</p>
+                ${selected.map(item => `<p>${item.name} (x${item.quantity}) - ${item.price}gc</p>`).join('')}
+                ${isRush ? '<p class="text-red-500">⚡ Rush Order (+10gc)</p>' : ''}
+            `;
+            
+            document.getElementById('receipt-content').innerHTML = receiptContent;
+            document.getElementById('receipt-total').innerText = totalPrice + " GC";
+            document.getElementById('receipt-section').style.display = 'flex';
+        }
+
+        // ===== SEND EMAIL RECEIPT =====
+        async function sendEmailReceipt(orderData) {
+            // This is a template for EmailJS
+            // You need to set up an EmailJS account and create a template
+            const templateParams = {
+                to_email: orderData.client.email,
+                client_name: orderData.client.name,
+                client_handle: orderData.client.handle,
+                order_theme: orderData.order.theme,
+                order_inclusions: orderData.order.inclusions,
+                order_items: orderData.items.map(item => `${item.name} (x${item.quantity}) - ${item.price}gc`).join('\n'),
+                order_total: orderData.total + ' GC',
+                order_rush: orderData.order.isRush ? 'Yes (+10gc)' : 'No',
+                order_date: new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' })
+            };
+
+            try {
+                // Replace with your actual EmailJS service ID and template ID
+                await emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams);
+                console.log('Email sent successfully');
+                return true;
+            } catch (error) {
+                console.error('Email sending failed:', error);
+                return false;
+            }
+        }
+
+        // ===== DISCORD SUBMISSION =====
+        async function submitToDiscord(orderData) {
+            const receiptInput = document.getElementById('receipt_file');
+            const referenceInput = document.getElementById('reference_file');
 
             // Prepare Discord embed
             const embed = {
@@ -1236,22 +1299,22 @@
                 fields: [
                     { 
                         name: "👤 CLIENT INFORMATION", 
-                        value: `**Name:** ${document.getElementById('client_name').value || 'N/A'}\n**Handle:** ${document.getElementById('client_handle').value || 'N/A'}\n**Email:** ${document.getElementById('client_email')?.value || 'Not provided'}`, 
+                        value: `**Name:** ${orderData.client.name}\n**Handle:** ${orderData.client.handle}\n**Email:** ${orderData.client.email}`, 
                         inline: false 
                     },
                     { 
                         name: "🎨 ORDER DETAILS", 
-                        value: `**Theme:** ${document.getElementById('design_theme').value || 'None'}\n**Technical Details:** ${document.getElementById('inclusion_details').value || 'None'}\n**Custom Notes:** ${document.getElementById('custom_desc')?.value || 'None'}`, 
+                        value: `**Theme:** ${orderData.order.theme}\n**Inclusions:** ${orderData.order.inclusions}\n**Custom Notes:** ${orderData.order.customDesc || 'None'}`, 
                         inline: false 
                     },
                     { 
                         name: "📦 SELECTED ITEMS", 
-                        value: selected.join("\n") || "No items selected", 
+                        value: orderData.items.map(item => `• ${item.name} (x${item.quantity}) — ${item.price}gc`).join("\n") || "No items selected", 
                         inline: false 
                     },
                     { 
                         name: "💰 PAYMENT SUMMARY", 
-                        value: `**Total Amount:** ${totalPrice} GC\n**Rush Order:** ${document.getElementById('rush_check').checked ? 'Yes (+10gc)' : 'No'}`,
+                        value: `**Total Amount:** ${orderData.total} GC\n**Rush Order:** ${orderData.order.isRush ? 'Yes (+10gc)' : 'No'}`,
                         inline: true 
                     },
                     { 
@@ -1262,15 +1325,6 @@
                 ],
                 timestamp: new Date().toISOString()
             };
-
-            // Add custom description if provided
-            if (document.getElementById('custom_desc')?.value) {
-                embed.fields.push({
-                    name: "📝 ADDITIONAL NOTES",
-                    value: document.getElementById('custom_desc').value,
-                    inline: false
-                });
-            }
 
             const payload = {
                 content: "@here **New order has been placed!**",
@@ -1298,30 +1352,65 @@
                 });
                 
                 if(response.ok) { 
-                    // Hide receipt modal and loading
-                    document.getElementById('receipt-section').style.display = 'none';
-                    loadingOverlay.classList.remove('active');
-                    
-                    // Show success modal
-                    document.getElementById('success-modal').style.display = 'flex';
-                    
-                    console.log('Order submitted successfully!');
+                    console.log('Discord webhook sent successfully');
+                    return true;
                 } else { 
                     const errorText = await response.text();
-                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                    console.error('Discord webhook failed:', errorText);
+                    return false;
+                }
+            } catch (error) {
+                console.error('Discord submission error:', error);
+                return false;
+            }
+        }
+
+        // ===== MAIN ORDER SUBMISSION =====
+        async function submitOrder() {
+            const btn = document.getElementById('final-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SENDING...';
+            btn.disabled = true;
+            
+            // Show loading overlay
+            loadingOverlay.classList.add('active');
+
+            try {
+                // Submit to Discord
+                const discordSuccess = await submitToDiscord(orderData);
+                
+                // Send email receipt
+                const emailSuccess = await sendEmailReceipt(orderData);
+                
+                // Hide receipt modal and loading
+                document.getElementById('receipt-section').style.display = 'none';
+                loadingOverlay.classList.remove('active');
+                
+                if (discordSuccess) {
+                    // Show email receipt modal first
+                    if (emailSuccess) {
+                        document.getElementById('email-confirmation').innerHTML = 
+                            `A copy of your receipt has been sent to<br><strong>${orderData.client.email}</strong>`;
+                        document.getElementById('email-receipt-modal').style.display = 'flex';
+                        
+                        // After 2 seconds, show success modal
+                        setTimeout(() => {
+                            document.getElementById('email-receipt-modal').style.display = 'none';
+                            document.getElementById('success-modal').style.display = 'flex';
+                        }, 2000);
+                    } else {
+                        // Email failed but Discord succeeded
+                        document.getElementById('success-modal').style.display = 'flex';
+                    }
+                } else {
+                    // Discord failed
+                    showError("Failed to submit order to server. Please try again or contact support.");
                 }
             } catch (error) {
                 console.error('Submission error:', error);
-                
                 loadingOverlay.classList.remove('active');
-                
-                // Check if it's a file size issue
-                if (receiptInput.files[0]?.size > MAX_FILE_SIZE || referenceInput.files[0]?.size > MAX_FILE_SIZE) {
-                    showError("File too large. Maximum size is 8MB per image.");
-                } else {
-                    showError("Upload failed. Please check your connection and try again.");
-                }
-                
+                showError("An error occurred. Please try again.");
+            } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
@@ -1351,7 +1440,7 @@
             // Ctrl/Cmd + Enter submits order from receipt
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                 if (document.getElementById('receipt-section').style.display === 'flex') {
-                    submitToDiscord();
+                    submitOrder();
                 }
             }
         });
